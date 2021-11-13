@@ -1,14 +1,22 @@
 const { apiService } = require('config');
+const { internal } = require('@hapi/boom');
 
-module.exports = {
-  accessTokenName: apiService.accessTokenName,
-  allowQueryToken: apiService.allowQueryToken,
-  validate: async (request, token, h) => {
-    const isValid = token === apiService.accessToken;
+module.exports = (tokenConfig) => {
+  if (!tokenConfig.accessToken) {
+    console.log(`${tokenConfig.accessTokenName} Token is not defined`); // eslint-disable-line no-console
+    throw internal();
+  }
 
-    const credentials = { token };
-    const artifacts = {};
+  return {
+    accessTokenName: tokenConfig.accessTokenName,
+    allowQueryToken: tokenConfig.allowQueryToken,
+    validate: async ({ logger }, token) => {
+      const isValid = token === apiService.accessToken;
 
-    return { isValid, credentials, artifacts };
-  },
+      const credentials = { token };
+      const artifacts = {};
+
+      return { isValid, credentials, artifacts };
+    },
+  };
 };

@@ -4,22 +4,22 @@ const handlers = require('./handlers');
 module.exports = () => [
   {
     method: 'get',
-    path: '/',
-    handler: request => handlers.getRoles(request),
+    path: '/roles',
+    handler: (request) => handlers.getRoles(request),
     config: {
       tags: ['api', 'roles'],
       description: 'Get list of all roles',
-      auth: 'jwt',
+      auth: 'userByRole',
     },
   },
   {
     method: 'get',
-    path: '/{id}',
-    handler: request => handlers.getRole(request),
+    path: '/roles/{id}',
+    handler: (request) => handlers.getRole(request),
     config: {
       tags: ['api', 'roles'],
       description: 'Get role by ID',
-      auth: 'jwt',
+      auth: 'userByRole',
       validate: {
         params: Joi.object({
           id: Joi.number().integer().required(),
@@ -29,12 +29,12 @@ module.exports = () => [
   },
   {
     method: 'post',
-    path: '/',
-    handler: request => handlers.storeRole(request),
+    path: '/roles',
+    handler: (request) => handlers.storeRole(request),
     config: {
       tags: ['api', 'roles'],
       description: 'Create a new role',
-      auth: 'jwt',
+      auth: 'userByRole',
       validate: {
         payload: Joi.object({
           name: Joi.string().min(3).max(30).required(),
@@ -45,12 +45,12 @@ module.exports = () => [
   },
   {
     method: 'put',
-    path: '/{id}',
-    handler: request => handlers.updateRole(request),
+    path: '/roles/{id}',
+    handler: (request) => handlers.updateRole(request),
     config: {
       tags: ['api', 'roles'],
       description: 'Update role',
-      auth: 'jwt',
+      auth: 'userByRole',
       validate: {
         params: Joi.object({
           id: Joi.number().integer().required(),
@@ -69,12 +69,12 @@ module.exports = () => [
   },
   {
     method: 'delete',
-    path: '/{id}',
-    handler: request => handlers.deleteRole(request),
+    path: '/roles/{id}',
+    handler: (request) => handlers.deleteRole(request),
     config: {
       tags: ['api', 'roles'],
       description: 'Delete role',
-      auth: 'jwt',
+      auth: 'userByRole',
       validate: {
         params: Joi.object({
           id: Joi.number().integer().required(),

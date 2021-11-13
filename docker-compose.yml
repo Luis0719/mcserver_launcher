@@ -2,22 +2,22 @@ version: '3.6'
 
 services:
   db_dev:
-    image: postgres:9.6.21
+    image: mongo
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: dev
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: dev
     volumes:
-      - ./postgres/pgdata:/var/lib/postgresql/data
+      - mongo_data:/data/db
     ports:
-      - '5432:5432'
+      - '27017:27017'
 
   api_dev:
     build:
       context: .
       dockerfile: Dockerfile
       target: dev
-    command: "yarn run watch"
+    command: 'yarn run start:dev'
     depends_on:
       - db_dev
     entrypoint: ./docker-entrypoint.sh
@@ -25,9 +25,12 @@ services:
       - APP_ENV=development
       - NODE_ENV=development
     ports:
-      - "3000:3000"
+      - '3000:3000'
     stdin_open: true
-    tty: true
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
+
+volumes:
+  mongo_data:
+  node_modules:

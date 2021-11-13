@@ -1,34 +1,94 @@
 'use strict';
-const { DataTypes } = require('sequelize');
+const { Schema, model } = require('mongoose');
 const { bcrypt } = require('../../utils');
 
-module.exports = sequelize => {
-  const Users = sequelize.define(
-    'Users',
-    {
-      first_name: DataTypes.STRING,
-      last_name: DataTypes.STRING,
-      image: DataTypes.STRING,
-      username: DataTypes.STRING,
-      password: DataTypes.STRING,
-      email: DataTypes.STRING,
-      phone: DataTypes.STRING,
-      roles: DataTypes.ARRAY(DataTypes.STRING),
+const UserSchema = new Schema(
+  {
+    first_name: {
+      type: String,
+      required: true,
     },
-    {
-      tableName: 'users',
-    }
-  );
+    last_name: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      index: { unique: true, sparse: true }, // sparse will allow duplicate 'null' values
+    },
+    phone: {
+      type: String,
+    },
+    image: {
+      type: String,
+    },
+    roles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Role',
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-  Users.associate = models => {};
+UserSchema.pre('save', async function () {
+  if (this.isNew) await this.setPassword(this.password);
+});
 
-  Users.prototype.setPassword = async password => {
-    this.password = await bcrypt.hash(password);
-  };
+UserSchema.virtual('full_name').get(function () {
+  return `${this.first_name} ${this.last_name}`;
+});
 
-  Users.prototype.getFullName = () => {
-    return `${this.firstName} ${this.lastName}`;
-  };
-
-  return Users;
+UserSchema.statics.findWithRoles = async function (
+  userId,
+  attributes = {},
+  lean = false
+) {
+  return this.findById(userId, attributes.user, {
+    lean,
+    populate: {
+      path: 'roles',
+      select: attributes.roles,
+    },
+  });
 };
+
+UserSchema.statics.findWithRolesAndActions = async function (
+  userId,
+  attributes = {},
+  lean = false
+) {
+  return this.findById(userId, attributes.user, {
+    lean,
+    populate: {
+      path: 'roles',
+      select: attributes.roles,
+      populate: {
+        path: 'actions',
+        select: attributes.actions,
+      },
+    },
+  });
+};
+
+UserSchema.methods.setPassword = async function (password) {
+  this.password = await bcrypt.hash(password);
+};
+
+UserSchema.methods.getFullName = function () {
+  return `${this.firstName} ${this.lastName}`;
+};
+
+module.exports = model('User', UserSchema);

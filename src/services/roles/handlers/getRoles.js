@@ -1,22 +1,19 @@
-const {
-  helpers: {
-    httpErrors: { InternalServer },
-    functionalHelpers: { to },
-    response: { representAsPaginated },
-    sequelize: { buildSequelizeOptions },
-  },
-} = require('common');
+const { helpers } = require('common');
+const { internal } = require('@hapi/boom');
 const { getRoles, buildFilterCondition } = require('../methods');
 
+const { to } = helpers.functionalHelpers;
+const { representAsPaginated } = helpers.response;
+
 module.exports = async ({ logger, query }) => {
-  const options = buildSequelizeOptions(query);
+  const options = buildOptions(query);
   options.where = buildFilterCondition(query);
 
-  const [error, roles] = await to(getRoles());
+  const [error, roles] = await to(getRoles(options));
 
   if (error) {
     logger.error(error);
-    throw InternalServer();
+    throw internal();
   }
 
   return representAsPaginated('role')(roles);

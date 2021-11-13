@@ -4,11 +4,11 @@ module.exports = [
   {
     method: 'GET',
     path: '/',
-    handler: () => {
-      return {
-        service: pkg.name,
-        version: pkg.version,
-      };
+    handler: (req, h) => {
+      return h.view('home/index', {
+        server_name: pkg.name,
+        server_version: pkg.version,
+      });
     },
     config: {},
   },

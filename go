@@ -48,10 +48,7 @@ function helptext {
   echo "    nuke                    Remove all local resources related to this project."
   echo "    lint                    Lint the javascript code."
   echo "    test                    Run tests"
-  echo "    create-migration <name> Create new db migration"
   echo "    create-model <name>     Create new db model"
-  echo "    create-seed <name>      Create new db seed"
-  echo "    migrate                 Run db migrations"
   echo "    seed                    Run db seeds"
 }
 
@@ -65,35 +62,20 @@ function test {
 }
 
 function lint {
-  ${DC} run client yarn run lint
+  run_yarn lint
 }
 
 function init {
-  setup_hooks
   ${DC} build
-}
-
-function migrate {
-  run_yarn migrate
 }
 
 function seed {
   run_yarn seed
 }
 
-function create-migration {
-  info "Creating $1 migration"
-  ${DC} run ${DEV_IMAGE} npx migration:create --name $1
-}
-
 function create-model {
   info "Creating $1 model"
   ${DC} run ${DEV_IMAGE} npx sequelize model:create --name $1
-}
-
-function create-seed {
-  info "Creating $1 seed"
-  ${DC} run ${DEV_IMAGE} npx sequelize seed:create --name $1
 }
 
 function start {
@@ -140,28 +122,6 @@ function shell {
   exec bash
 }
 
-
-# If we have a pre-commit hook and the pre-commit hook does not equal what we
-# want it to equal for this project then back it up with a timestamped file
-# name and create a new pre-commit hook.
-function setup_hooks {
-  if [ -f .git/hooks/pre-commit ]; then
-    current_pre_commit_hook=$(cat .git/hooks/pre-commit)
-    expected_pre_commit_hook=$'#!/bin/sh\n\n./go pre-commit'
-
-    if [ "$current_pre_commit_hook" != "$expected_pre_commit_hook" ]; then
-      mv .git/hooks/pre-commit .git/hooks/$(date '+%Y%m%d%H%M%S').pre-commit.old
-    fi
-  fi
-
-  cat > .git/hooks/pre-commit <<EOS
-#!/bin/sh
-
-./go pre-commit
-EOS
-  chmod +x .git/hooks/pre-commit
-}
-
 [[ $@ ]] || { helptext; exit 1; }
 
 case "$1" in
@@ -193,13 +153,7 @@ case "$1" in
     ;;
     lint) lint
     ;;
-    migrate) migrate $@
-    ;;
-    create-migration) create-migration $2
-    ;;
     create-model) create-model $2
-    ;;
-    create-seed) create-seed $2
     ;;
     seed) seed
     ;;

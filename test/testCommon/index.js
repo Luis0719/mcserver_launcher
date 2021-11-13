@@ -1,3 +1,5 @@
 module.exports = {
-  createTestServer: require('./createTestServer'),
+  db: require('./database'),
+  testServer: require('./testServer'),
+  utils: require('./utils'),
 };

@@ -1,23 +1,19 @@
 const { helpers } = require('common');
-const { InternalServer, Unauthorized } = helpers.httpErrors;
-const { to } = helpers.functionalHelpers;
-
+const { internal, unauthorized } = require('@hapi/boom');
 const { login } = require('../methods');
 
-module.exports = async ({ logger, payload, server }) => {
-  const tokenizer = server.methods.jwtSign;
+const { to } = helpers.functionalHelpers;
 
-  const [error, token] = await to(
-    login(tokenizer, payload.username, payload.password)
-  );
+module.exports = async ({ logger, payload }) => {
+  const [error, token] = await to(login(payload.username, payload.password));
 
   if (error) {
     logger.error(error);
-    throw InternalServer();
+    throw internal();
   }
 
   if (!token) {
-    throw Unauthorized('Usuario o contraseña incorrectos');
+    throw unauthorized('Invalid user or password');
   }
 
   return JSON.stringify({ token });
