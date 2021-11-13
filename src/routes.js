@@ -3,12 +3,12 @@ const pkg = require('../package.json');
 module.exports = [
   {
     method: 'GET',
-    path: '/ping',
-    handler: () => {
-      return {
-        service: pkg.name,
-        version: pkg.version,
-      };
+    path: '/',
+    handler: (req, h) => {
+      return h.view('home/index', {
+        server_name: pkg.name,
+        server_version: pkg.version,
+      });
     },
     config: {},
   },

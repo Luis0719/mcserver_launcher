@@ -66,7 +66,6 @@ function lint {
 }
 
 function init {
-  setup_hooks
   ${DC} build
 }
 
@@ -121,28 +120,6 @@ function nuke {
 
 function shell {
   exec bash
-}
-
-
-# If we have a pre-commit hook and the pre-commit hook does not equal what we
-# want it to equal for this project then back it up with a timestamped file
-# name and create a new pre-commit hook.
-function setup_hooks {
-  if [ -f .git/hooks/pre-commit ]; then
-    current_pre_commit_hook=$(cat .git/hooks/pre-commit)
-    expected_pre_commit_hook=$'#!/bin/sh\n\n./go pre-commit'
-
-    if [ "$current_pre_commit_hook" != "$expected_pre_commit_hook" ]; then
-      mv .git/hooks/pre-commit .git/hooks/$(date '+%Y%m%d%H%M%S').pre-commit.old
-    fi
-  fi
-
-  cat > .git/hooks/pre-commit <<EOS
-#!/bin/sh
-
-./go pre-commit
-EOS
-  chmod +x .git/hooks/pre-commit
 }
 
 [[ $@ ]] || { helptext; exit 1; }

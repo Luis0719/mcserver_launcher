@@ -26,6 +26,18 @@ const configServer = async () => {
   // Loan generic routes not associated with any service
   server.route(routes);
 
+  // Register views engine
+  server.views({
+    engines: {
+        html: require('handlebars')
+    },
+    relativeTo: __dirname,
+    path: './views',
+    layout: true,
+    layoutPath: './views/layout',
+    helpersPath: './views/helpers',
+});
+
   return server;
 };
 

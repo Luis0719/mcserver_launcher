@@ -1,7 +1,7 @@
 {
   "name": "hapi-node-jwt",
   "version": "1.0.0",
-  "description": "Template for Hapi APIs",
+  "description": "Launch mc servers from a beautiful web UI",
   "main": "src/index.js",
   "scripts": {
     "start:dev": "nodemon --legacy-watch src/app.js",
@@ -29,12 +29,12 @@
     "@hapi/inert": "^6.0.3",
     "@hapi/jwt": "^2.0.1",
     "@hapi/vision": "^6.0.1",
-    "bcrypt": "5.0.0",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.7.2",
     "dayjs": "^1.10.4",
+    "handlebars": "^4.7.7",
     "hapi-auth-bearer-token": "^6.1.6",
     "hapi-pino": "^8.3.0",
-    "hapi-swagger": "^13.0.2",
     "jiggler": "^1.0.1",
     "joi": "^17.4.0",
     "lodash": "^4.17.20",
